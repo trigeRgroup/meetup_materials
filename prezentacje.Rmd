@@ -1,0 +1,10 @@
+#meet(R) in Tricity
+
+#Prezentacje z pierwszego spotkania
+
+
+<p><b>RSelenium jako alternatywa dla rvest podczas web-srcapingu</b> - Krzysztof S³omczyñski<p/>
+
+<https://krzyslom.github.io/meet-R/#/>
+
+
