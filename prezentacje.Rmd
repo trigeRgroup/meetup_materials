@@ -3,8 +3,11 @@
 #Prezentacje z pierwszego spotkania
 
 
-<p><b>RSelenium jako alternatywa dla rvest podczas web-srcapingu</b> - Krzysztof S≥omczyÒski<p/>
+<p><b>RSelenium jako alternatywa dla rvest podczas web-srcapingu</b> - Krzysztof S≈Çomczy≈Ñski<p/>
 
 <https://krzyslom.github.io/meet-R/#/>
 
 
+<p><b>Data Scientist w Wirtualnej Polsce</b> - Micha≈Ç Maj
+
+<https://maju116.github.io/trigeR-01.2017/#/section-1>
