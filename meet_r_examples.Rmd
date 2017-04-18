@@ -1,0 +1,173 @@
+---
+title: 'meet(R) in Tricity #3'
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r echo=FALSE}
+library(readOffice)
+library(DataEntry)
+library(outreg)
+library(huxtable)
+library(RInno)
+library(doctr)
+library(tidyverse)
+library(RODBC)
+library(RJDBC)
+library(RMySQL)
+
+
+```
+
+# readOffice
+
+```{r}
+
+#read_docx
+
+word <- read_docx(docx=system.file('extdata','example.docx',package='readOffice'))
+
+word
+
+
+word_2 <- read_docx(docx='readOffice_example.docx')
+
+word_2
+
+
+#read_pptx
+
+powerPoint <- read_pptx('read_pptx_ex.pptx')
+
+powerPoint
+
+
+```
+
+# DataEntry -  Make it Easier to Enter Questionnaire Data
+
+```{r}
+
+DataEntry()
+
+
+```
+
+# outreg - Regression Table for Publication
+
+lm, glm, survreg (Regression Survival Model), ivreg (instrumental variable regression)
+```{r}
+
+outreg_stat_list()
+
+fit <- lm(mpg ~ cyl, data = mtcars)
+
+outreg(fit)
+
+fitlist <- list(lm(mpg ~ cyl, data = mtcars),
+                lm(mpg ~ cyl + wt + hp, data = mtcars),
+                lm(mpg ~ cyl + wt + hp + drat, data = mtcars))
+outreg(fitlist)
+
+
+```
+
+# huxtable - Simply Create LaTeX and HTML Tables
+
+```{r}
+
+dfr <- data.frame(a = 1:5, b = letters[1:5], stringsAsFactors = FALSE)
+dfr
+ht <-  as_huxtable(dfr)
+
+ht
+
+to_html(ht)
+
+ht_b <- set_all_borders(ht, 1:5, 1:2, 1)
+
+ht_b
+
+text_color(ht_b) <- 'navy'
+
+ht_b
+
+theme_article(ht)
+
+
+
+
+```
+
+#  RInno - A Local Deployment Framework for Shiny Apps
+
+```{r}
+
+create_app(app_name='my_appek', app_dir = getwd(), dir_out = "RInno_installer", pkgs = c("jsonlite", "shiny", "magrittr"), include_R = F, R_version = paste0(R.version$major, ".", R.version$minor))
+
+
+
+```
+
+# doctr - Easily Check Data Consistency and Quality
+
+> A tool that helps you check the consistency and the
+quality of data. Like a real doctor, it has functions for examining,
+diagnosing and assessing the progress of its ``patients''.
+
+
+
+```{r}
+
+
+is_character(mtcars$mpg)
+
+
+
+mtcars %>% compare(mtcars) %>% issues(verbose=TRUE)
+
+mtcars_1 <- mtcars[,1:5]
+
+mtcars %>% compare(mtcars_1) %>% issues(verbose=TRUE)
+
+
+
+```
+# iMessager 
+
+tylko macOS ...
+
+```{r}
+
+#send.imessage(recipient, message)
+
+
+
+#send.imessage("nr telefonu/adre email","Hello World!")
+```
+
+
+# SQL
+
+
+channel <- odbcConnect("DATABASE", uid="USERNAME", pwd="PASSWORD", believeNRows=FALSE)
+
+# Check that connection is working (Optional)
+odbcGetInfo(channel)
+
+# Find out what tables are available (Optional)
+Tables <- sqlTables(channel, schema="SCHEMA")
+
+# Query the database and put the results into the data frame "dataframe"
+ dataframe <- sqlQuery(channel, "
+ SELECT * FROM SCHEMA.DATATABLE")
+ 
+ 
+
+
+
+
+
