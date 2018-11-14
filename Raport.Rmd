@@ -1,0 +1,287 @@
+---
+title: "RMarkdown_example"
+author: "Ania"
+date: "13 listopada 2018"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+    number_sections: yes
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  pdf_document:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+geometry: margin=1in
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  error = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  comment = FALSE,
+  fig.align = "center"
+  )
+```
+
+```{r packages}
+library(ggplot2)
+library(ggpubr)
+library(ggsci)
+library(viridis)
+library(RColorBrewer)
+library(wesanderson)
+library(Amelia)
+library(xtable)
+library(gtable)
+library(kableExtra)
+library(dplyr)
+library(pastecs)
+library(bookdown)
+```
+
+# Data
+
+The table below gives the color counts and net weight (in grams) for a sample of 30 bags of M&M's ©. The advertised net weight is 47.9 grams
+
+Source: Christine Nickel and Jason York, ST 687 project, Fall 1998; http://www.randomservices.org/random/  
+
+
+```{r Data}
+
+MMs <- read.delim("MandM.Txt")
+
+MMs <- as.data.frame(MMs)
+
+tabela <- knitr::kable(MMs[1:10,], align = "c", caption = "M&Ms data")
+
+kable_styling(tabela,
+              bootstrap_options = c("striped", "hover","condensed"),
+              font_size = 12, full_width = TRUE) %>% 
+  row_spec(0, bold = TRUE, color = "black") %>% 
+  column_spec(7, background = "#436EEE", color="white")
+
+
+```
+
+**Edycja tabel:** https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+
+```{r image, echo=FALSE, fig.cap="M&M'S World", out.width = '50%', fig.align="center"}
+
+knitr::include_graphics("MM.jpg")
+
+```
+
+## Find missing data
+
+Plots a missingness map showing where missingness occurs in the dataset passed to *amelia*.
+
+```{r missing data}
+
+missmap(MMs)
+
+```
+
+## Let's explore ! 
+* basic statistics
+* scatter plot
+* box plot
+* histogram
+
+
+
+```{r basic statistics}
+
+#summary(MMs)  
+
+kable(round(pastecs::stat.desc(MMs), 1), format = "html") %>% kable_styling(full_width = TRUE)
+
+```
+
+
+### Scatter plot
+
+Check ! https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/
+
+```{r scatter plot - viridis}
+
+library(ggplot2)
+library(viridis)
+
+# pal <- function(col, ...) image(seq_along(col), 1, matrix(seq_along(col), ncol = 1), col = col, axes = FALSE, ...)
+# 
+# pal(viridis(25))
+
+ggplot(MMs, aes(Red, Weight))+
+  geom_point(aes(color = Weight), size=2) +
+  scale_color_viridis(option = "D")+
+  theme_bw() +
+  theme(legend.position = "right")
+
+## try option="A" , "B" , "C", "D", "E"
+
+```
+
+wesanderson package
+
+```{r}
+library(wesanderson)
+
+# names(wes_palettes)
+
+wes_palette(name = "GrandBudapest2")
+
+# ggplot(MMs, aes(Red, Weight))+
+#   geom_point(aes(fill = Red), size=2) +
+#   scale_fill_manual(values = wes_palette("GrandBudapest2", n = 5, type = "continuous")) +
+#   theme_minimal() +
+#   theme(legend.position = "right")
+
+```
+
+### The color palettes provided as ggplot2 scale functions:
+
+- scale_color_npg() and scale_fill_npg(): Nature Publishing Group color palettes  
+- scale_color_aaas() and scale_fill_aaas(): American Association for the Advancement of Science color palettes  
+- scale_color_lancet() and scale_fill_lancet(): Lancet journal color palettes
+- scale_color_jco() and scale_fill_jco(): Journal of Clinical Oncology color palettes
+- scale_color_tron() and scale_fill_tron(): This palette is inspired by the colors used in Tron Legacy. It is suitable for displaying data when using a dark theme.
+
+### ggsci package
+```{r}
+library("ggplot2")
+library("ggsci")
+# Change area fill color. JCO palette
+
+# MMs$Red <- as.double(MMs$Red)
+# 
+# ggplot(MMs, aes(Red, Weight))+
+#   geom_point(aes(color = Red), size=2) +
+#   scale_color_jco()+
+#   theme_classic() +
+#   theme(legend.position = "top")
+
+ggplot(iris, aes(Species, Sepal.Length)) +
+  geom_boxplot(aes(fill = Species)) +
+  scale_fill_npg()+
+  theme_classic() +
+  labs(title="Nature Publishing Group")+
+  theme(legend.position = "top")
+
+```
+
+### Box plot, ggpubr package
+
+```{r box plot}
+
+library("ggpubr")
+
+#  boxplot {graphics}
+boxplot(MMs$Weight)
+
+ggboxplot(MMs, y = "Weight",
+          width = 0.5,
+          bxp.errorbar = TRUE,
+          add = c("mean"),
+          color="blue",xlab = "variable") + theme_classic2()
+
+
+```
+
+### Histogram
+
+```{r histogram}
+
+gghistogram(MMs, x = "Weight",bins = 10,
+          add = c("mean"),
+          color="blue",xlab = "variable") + theme_classic2()
+
+#  Default bins = 30
+
+```
+
+QQ plots is used to check whether the data is normally distributed.
+
+```{r QQ plot}
+
+ggqqplot(MMs, x = "Weight", color = "navyblue")
+
+
+```
+
+```{r}
+
+Shop <- rep(c("A", "B", "C"), 10)
+
+ID <- seq(1:nrow(MMs))
+
+MMs_2 <- cbind.data.frame(ID,MMs, Shop)
+
+
+```
+
+### Box plots for several variables
+
+```{r}
+
+ggplot(MMs_2, aes(Shop, Yellow)) +
+  geom_boxplot(aes(fill = Shop)) +
+  scale_fill_jco()+
+  theme_classic() +
+  theme(legend.position = "top")
+
+
+ boxes <- ggboxplot(MMs_2, "Shop", "Yellow",
+    color = "Shop", palette=c("#00AFBB", "#E7B800", "#FC4E07"),
+    add = "jitter", shape = "Shop")
+ 
+ boxes
+
+
+```
+
+### Dotchart
+
+```{r}
+ggdot <- ggdotchart(MMs_2, x = "ID", y = "Blue",
+           color = "Shop",
+           shape=16,
+           # palette = c("#00AFBB", "#E7B800", "#FC4E07"), 
+           palette = "npg",
+           sorting = "descending",                       
+           add = "segments",
+           rotate = TRUE,                                
+           group = "Shop",                                
+           dot.size = 3,                                 
+           # label = round(MMs_2$Weight),                        
+           # font.label = list(color = "black", size = 9, 
+           #                   vjust = -0.5),               
+           ggtheme = theme_classic()                    
+           )
+ggdot
+
+```
+
+### Plots agregation
+
+```{r, echo=TRUE, fig.cap="Two in one", out.width="75%" }
+ggarrange(boxes, ggdot, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1, widths = c(1,1))
+```
+
+### Equation
+
+$$X^i$$
+$$X_{i}$$
+
+$$\sum_{i=1}^n X_i$$
+
+$$\sqrt{b^2 - 4ac}$$
